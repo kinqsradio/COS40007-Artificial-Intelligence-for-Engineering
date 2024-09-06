@@ -8,35 +8,15 @@ True: 0, Predicted: 0
 True: 0, Predicted: 0
 True: 0, Predicted: 0
 True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
-True: 0, Predicted: 0
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
-True: 1, Predicted: 1
+True: 1, Predicted: 0
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 True: 1, Predicted: 1
 
-Final Accuracy: 100.00%
+Final Accuracy: 95.00%
