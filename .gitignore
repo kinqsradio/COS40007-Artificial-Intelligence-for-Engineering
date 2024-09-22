@@ -164,7 +164,8 @@ week-05-portfolio/models/mask_rcnn_resnet50_log_detector.pth
 
 datasets/11/graffiti.yaml
 datasets/11/images/train_selected
-datasets/11/labels/test_selected
+datasets/11/images/test_selected
 datasets/11/labels/train_selected
+datasets/11/labels/test_selected
 
 
