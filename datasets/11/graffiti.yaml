@@ -1,4 +1,0 @@
-train: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/datasets/11/images/train_selected
-val: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/datasets/11/images/test_selected
-nc: 1
-names: [Graffiti]
