@@ -22,3 +22,5 @@ labelme
 labelme2coco
 ultralytics
 opencv-python
+requests
+pexelsPy
