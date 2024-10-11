@@ -167,5 +167,7 @@ datasets/11/images/train_selected
 datasets/11/images/test_selected
 datasets/11/labels/train_selected
 datasets/11/labels/test_selected
-
+group_assignment/datasets/data/data/rubbish.zip
+group_assignment/datasets/data/data/annotations-20241010T230528Z-001.zip
+group_assignment/datasets/data.zip
 
