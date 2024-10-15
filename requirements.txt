@@ -22,5 +22,17 @@ labelme
 labelme2coco
 ultralytics
 opencv-python
+opencv-python-headless
 requests
 pexelsPy
+flask
+Flask-Redis
+flask-sqlalchemy 
+flask-wtf 
+flask-migrate
+flask_socketio
+openai
+eventlet
+flask_cors
+celery
+fastapi
