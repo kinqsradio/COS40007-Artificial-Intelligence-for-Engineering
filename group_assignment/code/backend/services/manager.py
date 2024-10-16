@@ -39,8 +39,3 @@ class Manager:
     
     def list_fastsam_models(self):
         return self.list_models('fastsam', FastSamModel)
-    
-    def get_detection_model_classes(self, model_name, model_type='yolo'):
-        if model_name in self.models[model_type] and model_type=='yolo':
-            return self.models[model_type][model_name].class_labels()
-        return []

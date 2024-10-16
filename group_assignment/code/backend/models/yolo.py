@@ -7,10 +7,9 @@ class YoloModel(ModelSettings):
         super().__init__(**kwargs)
         self.model = YOLO(model_path)
         
-    def track(self, image, classes):
+    def track(self, image):
         results = self.model.track(
             image, 
-            classes=classes, 
             imgsz=self.imgsz, 
             conf=self.conf, 
             iou=self.iou, 
@@ -23,6 +22,3 @@ class YoloModel(ModelSettings):
         )
         gc.collect()
         return results
-    
-    def class_labels(self):
-        return self.model.names
