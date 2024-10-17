@@ -1,3 +1,5 @@
+from database import db
+
 class ModelSettings:
     def __init__(self, 
                  imgsz=640, 
@@ -21,3 +23,27 @@ class ModelSettings:
         self.augment = augment
         self.agnostic_nms = agnostic_nms
         self.half = half
+        
+class GlobalSettings(db.Model):
+    __tablename__ = 'global_settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    detection_model_name = db.Column(db.String(100), nullable=False)
+    segmentation_model_name = db.Column(db.String(100), nullable=False)
+
+    @staticmethod
+    def get_settings():
+        return db.session.query(GlobalSettings).first()
+
+    @staticmethod
+    def update_settings(detection_model_name, segmentation_model_name):
+        settings = GlobalSettings.get_settings()
+        if settings:
+            db.session.delete(settings)
+        settings = GlobalSettings(
+            detection_model_name=detection_model_name,
+            segmentation_model_name=segmentation_model_name,
+        )
+        db.session.add(settings)
+        db.session.commit()
+        return settings
