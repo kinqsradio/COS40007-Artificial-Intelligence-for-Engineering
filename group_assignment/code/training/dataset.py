@@ -105,16 +105,27 @@ class DatasetPreparation:
         print("LabelMe annotations converted to COCO format")
 
     def get_datasets(self):
-        # Define transformations
-        transform = transforms.Compose([transforms.ToTensor()])
+        # Define data augmentation transformations for the training set
+        train_transform = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=15),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+            transforms.RandomResizedCrop(size=(256, 256), scale=(0.8, 1.0)),
+            transforms.ToTensor(),
+        ])
+
+        # Simple transformations for the validation set (only converting to tensor)
+        val_transform = transforms.Compose([
+            transforms.ToTensor(),
+        ])
 
         # Paths to train and validation JSON annotations
         train_json = os.path.join(self.COCO_ANNOTATIONS_DIR, 'train.json')
         val_json = os.path.join(self.COCO_ANNOTATIONS_DIR, 'val.json')
 
         # Create Dataset instances
-        train_dataset = COCODataset(root=self.LABEL_FOLDER, annotation=train_json, transforms=transform)
-        val_dataset = COCODataset(root=self.LABEL_FOLDER, annotation=val_json, transforms=transform)
+        train_dataset = COCODataset(root=self.LABEL_FOLDER, annotation=train_json, transforms=train_transform)
+        val_dataset = COCODataset(root=self.LABEL_FOLDER, annotation=val_json, transforms=val_transform)
         
         return train_dataset, val_dataset
 
