@@ -29,20 +29,18 @@ class GlobalSettings(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     detection_model_name = db.Column(db.String(100), nullable=False)
-    segmentation_model_name = db.Column(db.String(100), nullable=False)
 
     @staticmethod
     def get_settings():
         return db.session.query(GlobalSettings).first()
 
     @staticmethod
-    def update_settings(detection_model_name, segmentation_model_name):
+    def update_settings(detection_model_name):
         settings = GlobalSettings.get_settings()
         if settings:
             db.session.delete(settings)
         settings = GlobalSettings(
             detection_model_name=detection_model_name,
-            segmentation_model_name=segmentation_model_name,
         )
         db.session.add(settings)
         db.session.commit()

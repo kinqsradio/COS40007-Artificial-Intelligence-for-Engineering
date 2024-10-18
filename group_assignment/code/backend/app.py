@@ -4,9 +4,8 @@ from flask_migrate import Migrate, init, migrate, upgrade
 from database import db
 from routes import create_detection_routes
 from flask_socketio import SocketIO
-import eventlet
 import os
-
+import eventlet
 eventlet.monkey_patch()
 
 def create_app():
@@ -45,6 +44,6 @@ def setup_database(app):
 
 if __name__ == '__main__':
     with app.app_context():
-        setup_database(app)
+        # setup_database(app)
         db.create_all()
         socketio.run(app, debug=app.config['DEBUG'])

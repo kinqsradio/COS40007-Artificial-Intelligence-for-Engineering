@@ -1,12 +1,11 @@
 import os
-from models import YoloModel, FastSamModel
+from models import YoloModel
 
 class Manager:
     def __init__(self, models_folder):
         self.models_folder = models_folder
         self.models = {
-            'yolo': {},
-            'fastsam': {}
+            'yolo': {}
         }
         self.models_types = []
                 
@@ -36,6 +35,3 @@ class Manager:
     
     def list_yolo_models(self):
         return self.list_models('yolo', YoloModel)
-    
-    def list_fastsam_models(self):
-        return self.list_models('fastsam', FastSamModel)
