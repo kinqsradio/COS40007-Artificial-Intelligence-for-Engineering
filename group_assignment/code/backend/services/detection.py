@@ -36,7 +36,7 @@ class DetectionService:
         self.socketio = socketio
         self.lock = threading.Lock()
         logging.info("DetectionService initialized.")
-
+    
     async def detect(self, source=None, is_image=False, file_key=None):
         temp_path = None
         videocapture = None
