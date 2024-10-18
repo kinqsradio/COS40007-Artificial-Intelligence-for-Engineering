@@ -1,5 +1,4 @@
-// src/components/StartProcess.tsx
-
+import '../css/StartProcess.css';
 import React, { useState } from 'react';
 import { startProcess } from '../services/api';
 
@@ -33,12 +32,18 @@ const StartProcess: React.FC<StartProcessProps> = ({ fileKey, isImage }) => {
     };
 
     return (
-        <div>
+        <div className="start-process">
             <h2>Start Detection Process</h2>
             <button onClick={handleStartProcess} disabled={loading}>
                 {loading ? 'Starting...' : 'Start Process'}
             </button>
-            {message && <p>{message}</p>}
+            {loading && (
+                <div className="loading-indicator">
+                    <div className="spinner"></div>
+                    <span>Loading...</span>
+                </div>
+            )}
+            {message && <p className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</p>}
         </div>
     );
 };

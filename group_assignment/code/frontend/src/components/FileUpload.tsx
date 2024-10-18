@@ -1,3 +1,5 @@
+// FileUpload.tsx
+import '../css/FileUpload.css';
 import React, { useState, useRef } from 'react';
 import { uploadFile } from '../services/api';
 
@@ -11,15 +13,36 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
     const [timeFrame, setTimeFrame] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    const [dragOver, setDragOver] = useState<boolean>(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [extractedImage, setExtractedImage] = useState<string | null>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
+        handleFileSelect(file);
+    };
+
+    const handleFileSelect = (file: File | null) => {
         setSelectedFile(file);
         setIsVideo(file?.type.startsWith('video/') || false);
         setExtractedImage(null);
         setMessage('');
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setDragOver(true);
+    };
+
+    const handleDragLeave = () => {
+        setDragOver(false);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        handleFileSelect(file);
     };
 
     const handleUpload = async () => {
@@ -62,7 +85,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
         };
     };
 
-    // Utility function to convert a data URL to a File object
     const dataURLtoFile = (dataUrl: string, filename: string): File => {
         const arr = dataUrl.split(',');
         const mime = arr[0].match(/:(.*?);/)![1];
@@ -76,9 +98,18 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
     };
 
     return (
-        <div>
+        <div className="file-upload">
             <h2>File Upload</h2>
-            <input type="file" onChange={handleFileChange} accept="image/*,video/*" />
+            <div
+                className={`drag-and-drop ${dragOver ? 'drag-over' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
+                <p>Drag & Drop a file here or</p>
+                <label className="upload-label" htmlFor="file-input">Choose a File</label>
+                <input id="file-input" type="file" onChange={handleFileChange} accept="image/*,video/*" />
+            </div>
             {isVideo && (
                 <div>
                     <label>
@@ -96,15 +127,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
                 </div>
             )}
             {extractedImage && (
-                <div>
+                <div className="extracted-frame">
                     <h3>Extracted Frame:</h3>
-                    <img src={extractedImage} alt="Extracted Frame" style={{ maxWidth: '100%' }} />
+                    <img src={extractedImage} alt="Extracted Frame" />
                 </div>
             )}
             <button onClick={handleUpload} disabled={loading}>
                 {loading ? 'Uploading...' : 'Upload File'}
             </button>
-            {message && <p>{message}</p>}
+            {message && <p className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</p>}
         </div>
     );
 };

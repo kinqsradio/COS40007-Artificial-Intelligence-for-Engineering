@@ -1,5 +1,4 @@
-// src/components/Detection.tsx
-
+import '../css/Detection.css';
 import React, { useState } from 'react';
 import ModelSelector from './ModelSelector';
 import FileUpload from './FileUpload';
@@ -9,32 +8,49 @@ import ImageResults from './ImageResults';
 const Detection: React.FC = () => {
     const [fileKey, setFileKey] = useState<string | null>(null);
     const [isImage, setIsImage] = useState<boolean>(true);
-    const [message, setMessage] = useState<string>('');
 
     // Handle successful model configuration
     const handleModelSetSuccess = () => {
-        setMessage('Models were set successfully.');
+        console.log('Model Successfully Initialized');
     };
 
     // Handle file upload success
     const handleFileUpload = (uploadedFileKey: string) => {
         setFileKey(uploadedFileKey);
         setIsImage(true);
-        setMessage('File uploaded successfully.');
+    };
+
+    // Handle restart process
+    const handleRestart = () => {
+        setFileKey(null);
+        setIsImage(true);
     };
 
     return (
-        <div>
-            <h1>Detection Setup</h1>
-            <ModelSelector onSuccess={handleModelSetSuccess} />
-            <FileUpload onFileUploaded={handleFileUpload} />
-            {fileKey && (
-                <>
-                    <StartProcess fileKey={fileKey} isImage={isImage} />
+        <div className="detection-container">
+            <div className="detection-controls">
+                {!fileKey && (
+                    <>
+                        <ModelSelector onSuccess={handleModelSetSuccess} />
+                        <FileUpload onFileUploaded={handleFileUpload} />
+                    </>
+                )}
+                {fileKey && (
+                    <>
+                        <StartProcess fileKey={fileKey} isImage={isImage} />
+                        <button className="restart-button" onClick={handleRestart}>
+                            Restart
+                        </button>
+                    </>
+                )}
+            </div>
+            <div className="detection-results">
+                {fileKey ? (
                     <ImageResults fileKey={fileKey} />
-                </>
-            )}
-            {message && <p>{message}</p>}
+                ) : (
+                    <p>Please upload a file to start the detection process.</p>
+                )}
+            </div>
         </div>
     );
 };

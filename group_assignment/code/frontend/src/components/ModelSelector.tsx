@@ -1,3 +1,4 @@
+import '../css/ModelSelector.css';
 import React, { useEffect, useState } from 'react';
 import { fetchModels, setModels } from '../services/api';
 import { ListModelsResponse } from '../types/models';
@@ -49,8 +50,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onSuccess }) => {
         }
     };
 
+    // ModelSelector.tsx
     return (
-        <div>
+        <div className="model-selector">
             <h2>Model Selector</h2>
             <div>
                 <label>Detection Model:</label>
@@ -66,6 +68,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onSuccess }) => {
                     ))}
                 </select>
             </div>
+            {loading && <div className="loading-indicator">Loading...</div>}
         </div>
     );
 };

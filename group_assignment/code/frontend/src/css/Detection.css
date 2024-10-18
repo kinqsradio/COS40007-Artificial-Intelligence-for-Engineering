@@ -1,0 +1,42 @@
+/* Detection.css */
+.detection-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detection-controls {
+    flex: 1;
+    max-width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detection-results {
+    flex: 3;
+    max-width: 75%;
+}
+
+.hidden {
+    display: none;
+}
+
+.restart-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #dc3545;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.restart-button:hover {
+    background-color: #c82333;
+}

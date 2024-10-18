@@ -1,0 +1,130 @@
+/* FileUpload.css */
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+    transition: box-shadow 0.3s ease;
+}
+
+.file-upload:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.file-upload h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload .upload-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.file-upload .upload-label:hover {
+    background-color: #0056b3;
+}
+
+.file-upload .drag-and-drop {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.file-upload label {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #666;
+}
+
+.file-upload button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.file-upload button:hover {
+    background-color: #218838;
+}
+
+.file-upload .message {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+}
+
+.file-upload .error {
+    color: #dc3545;
+}
+
+.file-upload .success {
+    color: #28a745;
+}
+
+.file-upload .extracted-frame {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.file-upload .extracted-frame img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 12px;
+}
+
+.file-upload .loading-indicator {
+    font-size: 16px;
+    color: #007bff;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.file-upload .loading-indicator .spinner {
+    margin-right: 8px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
