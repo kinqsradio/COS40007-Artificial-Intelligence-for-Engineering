@@ -1,6 +1,7 @@
 import '../css/TrainingResults.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { BASE_URL } from '../services/api';
 
 interface TrainingResultsProps {
     trainingFolder: string;
@@ -28,7 +29,7 @@ const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onRes
         setLoading(true);
 
         if (!socketRef.current) {
-            socketRef.current = io('http://127.0.0.1:5000', {
+            socketRef.current = io(BASE_URL, {
                 transports: ['websocket'],
             });
         }
