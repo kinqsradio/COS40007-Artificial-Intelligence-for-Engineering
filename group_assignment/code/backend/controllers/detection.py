@@ -6,19 +6,23 @@ from flask_socketio import SocketIO
 from services import DetectionService, Manager
 from flask_socketio import emit, join_room
 from flask import Blueprint, request, jsonify
-from models import GlobalSettings
 from threading import Lock
+from flask import send_from_directory, jsonify
+
 
 detection_controller = Blueprint('detection_controller', __name__)
 
 CACHE_DIR = 'cache'
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-MODELS_FOLDER = 'group_assignment/models'
+MODELS_FOLDER = 'group_assignment/runs/train'
 
 def create_detection_controller(socketio):
+    
+    detection_controller.detection_service = None
+    
     # Initialize Manager
-    model_manager = Manager(models_folder=MODELS_FOLDER)
+    model_manager = Manager(models_folder=MODELS_FOLDER, socketio=socketio)
     
     # Load all available models
     available_yolo_models = model_manager.list_yolo_models()
@@ -26,16 +30,16 @@ def create_detection_controller(socketio):
     # Lock for thread safety
     service_lock = Lock()
 
-    def initialize_detection_service():
+    def initialize_detection_service(model_name):
         """
-        Initializes the detection service based on global settings.
+        Initializes the detection service based on the specified model.
         """
-        global_settings = GlobalSettings.get_settings()
-        if not global_settings:
-            raise ValueError("Global Settings Not Found")
-        
+        if model_name not in available_yolo_models:
+            raise ValueError("Invalid model name provided")
+
+        # Create the detection service with the selected model
         detection_service = DetectionService(
-            yolo_model=available_yolo_models[global_settings.detection_model_name],
+            yolo_model=available_yolo_models[model_name],
             socketio=socketio,
         )
         detection_controller.detection_service = detection_service
@@ -57,24 +61,15 @@ def create_detection_controller(socketio):
                     pass
                 gc.collect()
 
-    def reinitialize_detection_service():
-        """
-        Reinitializes the detection service after clearing the previous instance.
-        """
-        clear_detection_service()
-        initialize_detection_service()
-        # Notify clients that the detection service has been reset
-        socketio.emit('service_reinitialized', {'message': 'Detection service has been reinitialized'})
-
     @detection_controller.route('/list_models', methods=['GET'])
     def list_models():
         """Endpoint to list all available detection models."""
         return jsonify({'detection_models': list(available_yolo_models.keys())}), 200
 
-    @detection_controller.route('/set_models', methods=['POST'])
-    def set_models():
+    @detection_controller.route('/set_model', methods=['POST'])
+    def set_model():
         """
-        Endpoint to set detection models.
+        Endpoint to set the detection model without emitting training results.
         """
         try:
             data = request.json
@@ -83,21 +78,11 @@ def create_detection_controller(socketio):
             if not detection_model_name:
                 raise ValueError('Detection model must be specified.')
 
-            detection_model = available_yolo_models.get(detection_model_name)
+            # Clear the previous detection service and initialize the new one
+            clear_detection_service()
+            initialize_detection_service(detection_model_name)
 
-            if not detection_model:
-                raise ValueError('Invalid detection model name.')
-
-            # Clear previous detection service
-            reinitialize_detection_service()
-
-            # Update global settings in the database
-            GlobalSettings.update_settings(detection_model_name=detection_model_name)
-
-            # Initialize the new detection service
-            initialize_detection_service()
-
-            return jsonify({"message": "Models set successfully"}), 200
+            return jsonify({"message": "Model set successfully"}), 200
 
         except ValueError as e:
             logging.error(f"Model setup error: {str(e)}")
@@ -105,6 +90,32 @@ def create_detection_controller(socketio):
         except Exception as e:
             logging.exception("Unexpected error during model setup")
             return jsonify({'error': 'An unexpected error occurred during model setup'}), 500
+
+    @socketio.on('request_training_results')
+    def handle_request_training_results(data):
+        """
+        Handles the 'request_training_results' socket event.
+        Emits the training results for the specified training folder.
+        """
+        training_folder = data.get('training_folder')
+        
+        if not training_folder:
+            logging.error("Training folder not specified in request.")
+            return
+
+        # Join a room specific to the training folder for targeted communication
+        join_room(training_folder)
+        logging.info(f"Client joined room: {training_folder}")
+
+        # Emit training results for the specified folder
+        try:
+            model_manager.emit_training_results(training_folder)
+        except Exception as e:
+            logging.error(f"Failed to emit training results for {training_folder}: {e}")
+            emit('training_results_error', {'message': 'Failed to retrieve training results'})
+
+        logging.info(f"Emitted training results for {training_folder}")
+
 
     @detection_controller.route('/upload', methods=['POST'])
     def upload_file():
@@ -152,7 +163,7 @@ def create_detection_controller(socketio):
             # Initialize detection service if not already done
             with service_lock:
                 if detection_controller.detection_service is None:
-                    initialize_detection_service()
+                    raise RuntimeError('Detection service not initialized. Set a model first using /set_models.')
 
             detection_controller.detection_service.start_processing(
                 file_buffer, is_image=is_image, file_key=file_key
@@ -204,5 +215,7 @@ def create_detection_controller(socketio):
         file_key = data['file_key']
         join_room(file_key)
         logging.info(f"Client joined room: {file_key}")
+        
+    
 
     return detection_controller

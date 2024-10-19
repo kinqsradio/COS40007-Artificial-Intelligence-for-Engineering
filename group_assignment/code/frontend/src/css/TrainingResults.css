@@ -1,0 +1,169 @@
+/* TrainingResults.css */
+
+.training-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.training-results h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.results-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.result-group {
+    margin-bottom: 20px;
+}
+
+.result-group h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.result-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.result-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.result-item:hover {
+    transform: translateY(-5px);
+}
+
+.result-image {
+    max-width: 200px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.result-text {
+    font-family: monospace;
+    background-color: #f1f1f1;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    max-height: 200px;
+    overflow: auto;
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+.csv-table-container {
+    max-width: 100%;
+    overflow: auto; /* Enable scrolling */
+}
+
+.csv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.csv-table th,
+.csv-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.csv-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Fullscreen modal */
+.fullscreen-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.fullscreen-content {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    overflow: auto; /* Enable scrolling in fullscreen */
+    background-color: #fff;
+    padding: 20px;
+}
+
+.fullscreen-text {
+    font-family: monospace;
+    background-color: #fff;
+    color: #333;
+    padding: 16px;
+    border-radius: 8px;
+    width: 90%;
+    max-height: 90%;
+    overflow: auto; /* Enable scrolling for large text */
+}
+
+.fullscreen-csv-table-container {
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto; /* Enable scrolling for large CSV tables */
+}
+
+.fullscreen-csv-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fullscreen-csv-table th,
+.fullscreen-csv-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.fullscreen-csv-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.no-results {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    margin-top: 20px;
+}

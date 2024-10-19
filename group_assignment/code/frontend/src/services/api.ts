@@ -12,9 +12,9 @@ export const fetchModels = async (): Promise<ListModelsResponse> => {
     return response.data;
 };
 
-// Set the detection and segmentation models
-export const setModels = async (payload: SetModelsPayload): Promise<void> => {
-    await axios.post(`${BASE_URL}/set_models`, payload);
+// Set the detection model on the server
+export const setModel = async (payload: SetModelsPayload): Promise<void> => {
+    await axios.post(`${BASE_URL}/set_model`, payload);
 };
 
 // Upload a file (image or video) to the server

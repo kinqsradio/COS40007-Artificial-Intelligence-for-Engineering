@@ -5,23 +5,41 @@
     align-items: center;
     padding: 30px;
     border-radius: 12px;
-    background-color: #ffffff;
+    background-color: #f9f9f9;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
+    max-width: 600px;
     margin: 20px auto;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .file-upload:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
 }
 
 .file-upload h2 {
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: 600;
     margin-bottom: 24px;
     color: #333;
     text-align: center;
+}
+
+.file-upload .drag-and-drop {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    color: #666;
+    background-color: #f1f1f1;
+    transition: border-color 0.3s ease;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.file-upload .drag-and-drop.drag-over {
+    border-color: #28a745;
+    background-color: #e6ffe6;
 }
 
 .file-upload input[type="file"] {
@@ -29,68 +47,100 @@
 }
 
 .file-upload .upload-label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px 24px;
+    display: inline-block;
+    padding: 12px 30px;
     background-color: #007bff;
     color: #fff;
     font-size: 16px;
+    font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     text-transform: uppercase;
+    margin-top: 12px;
 }
 
 .file-upload .upload-label:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
-.file-upload .drag-and-drop {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 20px;
+.file-upload .file-preview {
+    margin-top: 20px;
     text-align: center;
-    color: #666;
-    margin-bottom: 16px;
 }
 
-.file-upload label {
-    font-size: 16px;
+.file-upload .file-preview h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
     margin-bottom: 12px;
+}
+
+.file-upload .file-preview img,
+.file-upload .file-preview video {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 12px;
+}
+
+.file-upload .video-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.file-upload .video-controls label {
+    font-size: 16px;
     color: #666;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.file-upload .video-controls button {
+    margin-top: 8px;
 }
 
 .file-upload button {
-    padding: 10px 20px;
+    padding: 12px 28px;
     font-size: 16px;
+    font-weight: 600;
     border: none;
     border-radius: 8px;
     background-color: #28a745;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     margin-top: 20px;
+    text-transform: uppercase;
 }
 
 .file-upload button:hover {
     background-color: #218838;
+    transform: scale(1.05);
+}
+
+.file-upload button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
 }
 
 .file-upload .message {
-    margin-top: 16px;
+    margin-top: 20px;
     font-size: 16px;
-    color: #333;
+    font-weight: 600;
     text-align: center;
 }
 
-.file-upload .error {
-    color: #dc3545;
+.file-upload .message.success {
+    color: #28a745;
 }
 
-.file-upload .success {
-    color: #28a745;
+.file-upload .message.error {
+    color: #dc3545;
 }
 
 .file-upload .extracted-frame {
@@ -101,30 +151,7 @@
 .file-upload .extracted-frame img {
     max-width: 100%;
     border-radius: 8px;
-    border: 2px solid #ccc;
+    border: 2px solid #007bff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     margin-top: 12px;
-}
-
-.file-upload .loading-indicator {
-    font-size: 16px;
-    color: #007bff;
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-}
-
-.file-upload .loading-indicator .spinner {
-    margin-right: 8px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #007bff;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }

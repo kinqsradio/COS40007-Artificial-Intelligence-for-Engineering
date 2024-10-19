@@ -1,6 +1,7 @@
 /* Detection.css */
 .detection-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 20px;
     padding: 20px;
@@ -10,6 +11,7 @@
 
 .detection-controls {
     flex: 1;
+    min-width: 250px;
     max-width: 25%;
     display: flex;
     flex-direction: column;
@@ -18,25 +20,70 @@
 
 .detection-results {
     flex: 3;
+    min-width: 400px;
     max-width: 75%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .hidden {
     display: none;
 }
 
-.restart-button {
+.restart-button, .toggle-chat-button {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
     border-radius: 6px;
-    background-color: #dc3545;
+    background-color: #007bff;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
     margin-top: 10px;
 }
 
-.restart-button:hover {
-    background-color: #c82333;
+.restart-button:hover, .toggle-chat-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.chat-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 350px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hide chat when chat is hidden */
+.chat-hidden {
+    transform: translateY(100%);
+}
+
+/* Ensure the chat container does not overlap with other components on smaller screens */
+@media (max-width: 768px) {
+    .detection-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detection-controls,
+    .detection-results {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .chat-container {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+    }
 }

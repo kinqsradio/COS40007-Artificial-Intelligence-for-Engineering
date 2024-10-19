@@ -1,6 +1,6 @@
 // FileUpload.tsx
 import '../css/FileUpload.css';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { uploadFile } from '../services/api';
 
 interface FileUploadProps {
@@ -10,12 +10,22 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isVideo, setIsVideo] = useState<boolean>(false);
-    const [timeFrame, setTimeFrame] = useState<number>(0);
+    const [timeFrame, setTimeFrame] = useState<string>('0:00');
     const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const [dragOver, setDragOver] = useState<boolean>(false);
+    const [videoLoaded, setVideoLoaded] = useState<boolean>(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [extractedImage, setExtractedImage] = useState<string | null>(null);
+    const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (filePreviewUrl) {
+                URL.revokeObjectURL(filePreviewUrl);
+            }
+        };
+    }, [filePreviewUrl]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
@@ -27,6 +37,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
         setIsVideo(file?.type.startsWith('video/') || false);
         setExtractedImage(null);
         setMessage('');
+        setFilePreviewUrl(file ? URL.createObjectURL(file) : null);
+        setVideoLoaded(false); // Reset video loaded state
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -67,12 +79,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
     };
 
     const handleExtractFrame = () => {
-        if (!videoRef.current) {
-            setMessage('Video is not loaded.');
+        if (!videoRef.current || !videoLoaded) {
+            setMessage('Video is not loaded yet. Please wait until the video is ready.');
             return;
         }
 
-        videoRef.current.currentTime = timeFrame;
+        const [minute, second] = timeFrame.split(':').map(Number);
+        const timeInSeconds = minute * 60 + second;
+        videoRef.current.currentTime = timeInSeconds;
+
         videoRef.current.onseeked = () => {
             const canvas = document.createElement('canvas');
             canvas.width = videoRef.current!.videoWidth;
@@ -83,6 +98,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
             setExtractedImage(dataUrl);
             setMessage('Frame extracted successfully.');
         };
+    };
+
+    const handleVideoLoaded = () => {
+        setVideoLoaded(true);
+        setMessage('Video loaded successfully. You can now extract frames.');
     };
 
     const dataURLtoFile = (dataUrl: string, filename: string): File => {
@@ -110,20 +130,36 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
                 <label className="upload-label" htmlFor="file-input">Choose a File</label>
                 <input id="file-input" type="file" onChange={handleFileChange} accept="image/*,video/*" />
             </div>
+            {filePreviewUrl && (
+                <div className="file-preview">
+                    <h3>File Preview:</h3>
+                    {isVideo ? (
+                        <video
+                            ref={videoRef}
+                            src={filePreviewUrl}
+                            controls
+                            onLoadedData={handleVideoLoaded}
+                            width="300"
+                        />
+                    ) : (
+                        <img src={filePreviewUrl} alt="Selected File" width="300" />
+                    )}
+                </div>
+            )}
             {isVideo && (
-                <div>
+                <div className="video-controls">
                     <label>
-                        Timeframe (in seconds):
+                        Timeframe (minute:second):
                         <input
-                            type="number"
+                            type="text"
                             value={timeFrame}
-                            onChange={(e) => setTimeFrame(Number(e.target.value))}
+                            onChange={(e) => setTimeFrame(e.target.value)}
+                            placeholder="0:00"
                         />
                     </label>
                     <button onClick={handleExtractFrame} disabled={loading || !selectedFile}>
                         {loading ? 'Extracting...' : 'Extract Frame'}
                     </button>
-                    <video ref={videoRef} src={selectedFile ? URL.createObjectURL(selectedFile) : ''} hidden />
                 </div>
             )}
             {extractedImage && (
