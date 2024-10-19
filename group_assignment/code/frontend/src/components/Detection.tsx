@@ -13,10 +13,11 @@ const Detection: React.FC = () => {
     const [fileKey, setFileKey] = useState<string | null>(null);
     const [isImage, setIsImage] = useState<boolean>(true);
     const [selectedTrainingFolder, setSelectedTrainingFolder] = useState<string | null>('None');
-    const [defaultModel, setDefaultModel] = useState<string | null>('None');
     const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
     const [csvContent, setCsvContent] = useState<string>('');
     const [yamlContent, setYAMLContent] = useState<string>('');
+    const [explainImageData, setExplainImageData] = useState<string | null>(null);
+    const [imageDescription, setImageDescription] = useState<string | null>(null);
 
     useEffect(() => {
         async function loadDefaultModel() {
@@ -24,7 +25,6 @@ const Detection: React.FC = () => {
                 const models: ListModelsResponse = await fetchModels();
                 if (models.detection_models.length > 0) {
                     const initialModelPath = models.detection_models[0];
-                    setDefaultModel(initialModelPath);
                     const folder = initialModelPath.split('/')[0];
                     setSelectedTrainingFolder(folder);
                 }
@@ -52,9 +52,10 @@ const Detection: React.FC = () => {
         setFileKey(null);
         setIsImage(true);
         setSelectedTrainingFolder('None');
-        setDefaultModel('None');
         setCsvContent('');
         setYAMLContent('');
+        setExplainImageData(null);
+        setImageDescription(null);
         setIsChatStarted(false); // Ensure the chat is stopped on restart
     };
 
@@ -64,17 +65,29 @@ const Detection: React.FC = () => {
 
     const handleTrainingResultsUpdate = (results: { [key: string]: any }) => {
         const csvResult = results['results.csv'];
-        const yamlResult = results["args.yaml"];
+        const yamlResult = results['args.yaml'];
         if (csvResult && csvResult.type === 'text') {
             setCsvContent(csvResult.data);
         } else {
             console.warn('CSV content not found in training results');
         }
-        if (yamlResult && yamlResult.type === "text") {
+        if (yamlResult && yamlResult.type === 'text') {
             setYAMLContent(yamlResult.data);
         } else {
             console.warn('YAML content not found in training results');
         }
+    };
+
+    const handleExplainImage = (imageData: string, description: string) => {
+        setExplainImageData(imageData);
+        setImageDescription(description);
+        setIsChatStarted(true); // Automatically start chat when explaining an image
+    };
+
+    // This function will clear the image data after it has been used
+    const clearImageData = () => {
+        setExplainImageData(null);
+        setImageDescription(null);
     };
 
     // Memoize the TrainingResults component to avoid re-renders when toggling chat visibility
@@ -84,6 +97,7 @@ const Detection: React.FC = () => {
                 <TrainingResults
                     trainingFolder={selectedTrainingFolder}
                     onResultsUpdate={handleTrainingResultsUpdate}
+                    onExplainImage={handleExplainImage}
                 />
             );
         }
@@ -122,7 +136,13 @@ const Detection: React.FC = () => {
             </div>
             {isChatStarted && (
                 <div className="chat-container">
-                    <GroqChat csvContent={csvContent} yamlContent={yamlContent} />
+                    <GroqChat
+                        csvContent={csvContent}
+                        yamlContent={yamlContent}
+                        imageData={explainImageData}
+                        imageDescription={imageDescription || ''} // Provide a default empty string
+                        clearImageData={clearImageData} // Pass the clear function to GroqChat
+                    />
                 </div>
             )}
         </div>

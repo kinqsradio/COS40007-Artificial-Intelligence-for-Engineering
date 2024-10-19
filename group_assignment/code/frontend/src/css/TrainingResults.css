@@ -65,7 +65,27 @@
 .result-image {
     max-width: 200px;
     border-radius: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.result-item button {
+    margin-top: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    display: flex; /* Use flex to center the button */
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+    width: 150px; /* Set a fixed width for the button */
+}
+
+.result-item button:hover {
+    background-color: #0056b3;
 }
 
 .result-text {

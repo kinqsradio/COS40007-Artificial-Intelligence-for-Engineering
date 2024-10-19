@@ -6,6 +6,7 @@ import { BASE_URL } from '../services/api';
 interface TrainingResultsProps {
     trainingFolder: string;
     onResultsUpdate: (results: { [key: string]: any }) => void;
+    onExplainImage: (imageData: string, description: string) => void; // Added this prop for explaining images
 }
 
 interface TrainingResult {
@@ -13,10 +14,11 @@ interface TrainingResult {
     data: string;
 }
 
-const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onResultsUpdate }) => {
+const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onResultsUpdate, onExplainImage }) => {
     const [results, setResults] = useState<{ [key: string]: TrainingResult }>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [fullscreenItem, setFullscreenItem] = useState<TrainingResult | null>(null);
+    const [attachedImage, setAttachedImage] = useState<string | null>(null); // Track the attached image
     const socketRef = useRef<Socket | null>(null);
 
     useEffect(() => {
@@ -51,6 +53,18 @@ const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onRes
             socketRef.current = null;
         };
     }, [trainingFolder, onResultsUpdate]);
+
+    const handleAttachImage = (file: string, imageData: string) => {
+        if (attachedImage === file) {
+            // If the same image is clicked again, detach it
+            setAttachedImage(null);
+            onExplainImage('', ''); // Remove image
+        } else {
+            // Attach the new image and update the state
+            setAttachedImage(file);
+            onExplainImage(imageData, file); // Add image
+        }
+    };
 
     const renderCsvAsTable = (csvData: string, isFullscreen: boolean = false) => {
         const rows = csvData.trim().split('\n').map(row => row.split(','));
@@ -106,7 +120,15 @@ const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onRes
                         return (
                             <div key={file} className="result-item" onClick={() => setFullscreenItem(result)}>
                                 {result.type === 'image' ? (
-                                    <img src={`data:image/jpeg;base64,${result.data}`} alt={file} className="result-image" />
+                                    <div>
+                                        <img src={`data:image/jpeg;base64,${result.data}`} alt={file} className="result-image" />
+                                        <button onClick={(e) => {
+                                            e.stopPropagation(); // Prevent triggering fullscreen view
+                                            handleAttachImage(file, result.data);
+                                        }}>
+                                            {attachedImage === file ? 'Attached' : 'Attach Image'}
+                                        </button>
+                                    </div>
                                 ) : file.endsWith('.csv') ? (
                                     renderCsvAsTable(result.data)
                                 ) : (
