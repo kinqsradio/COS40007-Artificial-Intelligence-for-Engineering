@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Groq from 'groq-sdk';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import '../css/OpenAIChat.css';
 
 const groq = new Groq({
@@ -22,8 +23,13 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false); // State to control full-screen mode
     const tokenLimit = 1024; // Define the token limit for each chunk
     let typingInterval: NodeJS.Timeout;
+
+    const toggleFullScreen = () => {
+        setIsFullScreen(!isFullScreen); // Toggle full-screen state
+    };
 
     const projectBrief = `
     COS40007 – AI for Engineering
@@ -177,7 +183,6 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
     - Rationale: Automated integration would streamline the process of reporting and resolving roadside issues. While this feature is optional, it would significantly enhance the overall value of the project.
     `;
 
-
     useEffect(() => {
         if (csvContent || yamlContent) {
             sendContentsInChunks(csvContent, yamlContent);
@@ -185,7 +190,7 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
                 ...prevMessages,
                 {
                     role: 'assistant',
-                    content: 'Hi! I am here to help you answer questions related to the provided training results and project details. You can ask me about specific metrics, patterns, or insights from the CSV data, configuration details in the YAML file or project details.'
+                    content: 'Hi! I am here to help you answer questions related to the provided training results and project details. You can ask me about specific metrics, patterns, or insights from the CSV data, configuration details in the YAML file, or project details.'
                 }
             ]);
         }
@@ -241,8 +246,6 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
         setIsTyping(true);
 
         try {
-            console.log('Sending to Groq API:', [...messages, userMessage]);
-
             const completion = await groq.chat.completions.create({
                 messages: [...messages, userMessage].map((msg) => ({
                     role: msg.role,
@@ -295,7 +298,12 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
     };
 
     return (
-        <div className="groq-chat">
+        <div className={`groq-chat ${isFullScreen ? 'full-screen' : ''}`}>
+            <div className="chat-controls">
+                <button onClick={toggleFullScreen}>
+                    {isFullScreen ? 'Exit Full Screen' : 'Enlarge Chat'}
+                </button>
+            </div>
             <div className="chat-window">
                 {messages
                     .filter(message => message.role !== 'system')
@@ -303,7 +311,9 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent }) => {
                         <div key={index} className={`chat-message ${message.role}`}>
                             <strong>{message.role === 'user' ? 'User' : 'Assistant'}:</strong>
                             {message.role === 'assistant' ? (
-                                <ReactMarkdown>{message.content}</ReactMarkdown>
+                                <ReactMarkdown className="markdown-content" remarkPlugins={[remarkGfm]}>
+                                    {message.content}
+                                </ReactMarkdown>
                             ) : (
                                 <p>{message.content}</p>
                             )}

@@ -86,7 +86,7 @@ const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onRes
         "Confusion Matrices": ["confusion_matrix.png", "confusion_matrix_normalized.png"],
         "Training Batches": ["train_batch0.jpg", "train_batch1.jpg", "train_batch2.jpg"],
         "Validation Batches": ["val_batch0_labels.jpg", "val_batch0_pred.jpg"],
-        "YAML": ["args.yaml"],
+        "Training Configs": ["args.yaml"],
         "CSV": ["results.csv"],
     };
 
