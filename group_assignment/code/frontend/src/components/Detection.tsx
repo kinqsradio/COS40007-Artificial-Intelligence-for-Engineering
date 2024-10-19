@@ -16,6 +16,8 @@ const Detection: React.FC = () => {
     const [defaultModel, setDefaultModel] = useState<string | null>('None');
     const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
     const [csvContent, setCsvContent] = useState<string>('');
+    const [yamlContent, setYAMLContent] = useState<string>('');
+
 
     useEffect(() => {
         async function loadDefaultModel() {
@@ -53,6 +55,7 @@ const Detection: React.FC = () => {
         setSelectedTrainingFolder('None');
         setDefaultModel('None');
         setCsvContent('');
+        setYAMLContent('');
         setIsChatVisible(false); // Ensure the chat is hidden on restart
     };
 
@@ -62,10 +65,17 @@ const Detection: React.FC = () => {
 
     const handleTrainingResultsUpdate = (results: { [key: string]: any }) => {
         const csvResult = results['results.csv'];
+        const yamlResult = results["args.yaml"];
         if (csvResult && csvResult.type === 'text') {
             setCsvContent(csvResult.data);
         } else {
             console.warn('CSV content not found in training results');
+        }
+        if (yamlResult && yamlResult.type === "text") {
+            setYAMLContent(yamlResult.data);
+        } else {
+            console.warn('YAML content not found in training results');
+
         }
     };
 
@@ -113,7 +123,7 @@ const Detection: React.FC = () => {
                 )}
             </div>
             <div className={`chat-container ${isChatVisible ? '' : 'chat-hidden'}`}>
-                <GroqChat csvContent={csvContent} />
+                <GroqChat csvContent={csvContent} yamlContent={yamlContent} />
             </div>
         </div>
     );

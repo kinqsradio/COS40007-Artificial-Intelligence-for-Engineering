@@ -81,10 +81,12 @@ const TrainingResults: React.FC<TrainingResultsProps> = ({ trainingFolder, onRes
     };
 
     const groupedResults = {
+        "Labels": ["labels.jpg", "labels_correlogram.jpg"],
         "Curves": ["F1_curve.png", "PR_curve.png", "P_curve.png", "R_curve.png"],
         "Confusion Matrices": ["confusion_matrix.png", "confusion_matrix_normalized.png"],
         "Training Batches": ["train_batch0.jpg", "train_batch1.jpg", "train_batch2.jpg"],
         "Validation Batches": ["val_batch0_labels.jpg", "val_batch0_pred.jpg"],
+        "YAML": ["args.yaml"],
         "CSV": ["results.csv"],
     };
 
