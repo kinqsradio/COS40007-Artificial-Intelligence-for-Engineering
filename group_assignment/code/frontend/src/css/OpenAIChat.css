@@ -1,5 +1,4 @@
-/* OpenAIChat.css */
-
+/* Groq and OpenAI using the same layout */
 .openai-chat-container {
     display: flex;
     flex-direction: column;
