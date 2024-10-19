@@ -1,10 +1,9 @@
-/* ImageResults.css */
 .image-results {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -16,14 +15,15 @@
     text-align: center;
 }
 
+/* Layout for frames */
 .frames-container {
     display: flex;
-    justify-content: space-around;
     gap: 20px;
     margin-top: 16px;
     width: 100%;
 }
 
+/* Frame card styling */
 .frame-card {
     display: flex;
     flex-direction: column;
@@ -33,7 +33,7 @@
     background-color: #f9f9f9;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 360px;
+    max-width: 480px; /* Limit the maximum width of each card */
 }
 
 .frame-card h4 {
@@ -44,9 +44,41 @@
     text-align: center;
 }
 
+/* Canvas styling */
 .frame-card canvas {
-    border: 1px solid #ccc;
     border-radius: 4px;
+    max-width: 100%;
+    max-height: 600px; /* Prevent the canvas from being too large */
+    cursor: pointer; /* Show pointer cursor to indicate that it's clickable */
+}
+
+/* Modal styling */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+    z-index: 1001;
 }
