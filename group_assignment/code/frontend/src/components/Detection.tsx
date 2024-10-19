@@ -14,10 +14,9 @@ const Detection: React.FC = () => {
     const [isImage, setIsImage] = useState<boolean>(true);
     const [selectedTrainingFolder, setSelectedTrainingFolder] = useState<string | null>('None');
     const [defaultModel, setDefaultModel] = useState<string | null>('None');
-    const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
+    const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
     const [csvContent, setCsvContent] = useState<string>('');
     const [yamlContent, setYAMLContent] = useState<string>('');
-
 
     useEffect(() => {
         async function loadDefaultModel() {
@@ -46,7 +45,7 @@ const Detection: React.FC = () => {
     const handleFileUpload = (uploadedFileKey: string) => {
         setFileKey(uploadedFileKey);
         setIsImage(true);
-        setIsChatVisible(false); // Hide the chat when a file is uploaded
+        setIsChatStarted(false); // Stop the chat when a file is uploaded
     };
 
     const handleRestart = () => {
@@ -56,11 +55,11 @@ const Detection: React.FC = () => {
         setDefaultModel('None');
         setCsvContent('');
         setYAMLContent('');
-        setIsChatVisible(false); // Ensure the chat is hidden on restart
+        setIsChatStarted(false); // Ensure the chat is stopped on restart
     };
 
-    const toggleChatVisibility = () => {
-        setIsChatVisible(!isChatVisible);
+    const toggleChat = () => {
+        setIsChatStarted(!isChatStarted);
     };
 
     const handleTrainingResultsUpdate = (results: { [key: string]: any }) => {
@@ -75,7 +74,6 @@ const Detection: React.FC = () => {
             setYAMLContent(yamlResult.data);
         } else {
             console.warn('YAML content not found in training results');
-
         }
     };
 
@@ -99,8 +97,8 @@ const Detection: React.FC = () => {
                     <>
                         <ModelSelector onSuccess={handleModelSetSuccess} />
                         <FileUpload onFileUploaded={handleFileUpload} />
-                        <button className="toggle-chat-button" onClick={toggleChatVisibility}>
-                            {isChatVisible ? 'Hide Chat' : 'Show Chat'}
+                        <button className="toggle-chat-button" onClick={toggleChat}>
+                            {isChatStarted ? 'Stop Chat' : 'Start Chat'}
                         </button>
                     </>
                 )}
@@ -122,9 +120,11 @@ const Detection: React.FC = () => {
                     )
                 )}
             </div>
-            <div className={`chat-container ${isChatVisible ? '' : 'chat-hidden'}`}>
-                <GroqChat csvContent={csvContent} yamlContent={yamlContent} />
-            </div>
+            {isChatStarted && (
+                <div className="chat-container">
+                    <GroqChat csvContent={csvContent} yamlContent={yamlContent} />
+                </div>
+            )}
         </div>
     );
 };
