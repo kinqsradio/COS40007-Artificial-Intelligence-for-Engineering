@@ -145,7 +145,7 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
                 {
                     role: 'user',
                     content: [
-                        { type: 'text', text: `Please provide a detailed analysis of the image below. ${imageDescription}` },
+                        { type: 'text', text: `Please provide a detailed analysis of the image below. You may want to extracting all the data in the image and providing a detailed analysis and description. ${imageDescription}` },
                         { type: 'image_url', image_url: { url: imageContent } }
                     ]
                 }
