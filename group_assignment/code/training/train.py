@@ -6,12 +6,12 @@ def train(model_name):
 
     # Train the model with 2 GPUs
     results = model.train(
-        data='/mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/YOLODataset/dataset.yaml', 
+        data='/mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Dataset/dataset.yaml', 
         epochs=150, 
         imgsz=640,
         batch=32,
         project='group_assignment/runs/train',
-        name=f'{model_name}_150_epochs',
+        name=f'{model_name}_150_epochs_original_dataset',
         augment=True                   
     )
 
