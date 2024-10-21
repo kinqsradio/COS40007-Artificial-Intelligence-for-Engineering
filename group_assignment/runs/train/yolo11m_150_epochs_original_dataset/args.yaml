@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: yolo11m.pt
-data: /mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/YOLODataset/dataset.yaml
+data: /mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Dataset/dataset.yaml
 epochs: 150
 time: null
 patience: 100
