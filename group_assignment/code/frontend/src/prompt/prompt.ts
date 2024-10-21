@@ -1,5 +1,7 @@
 export const default_message = 'Hi! I am here to help you answer questions related to the provided training results and project details. You can ask me about specific metrics, patterns, or insights from the CSV data, configuration details in the YAML file, or project details.';
 
+export const detection_default_message = 'Hi! I am here to help you answer questions related to the detection results. You can ask me about the objects detected in the image, their locations, the confidence levels of the detections, and the accuracy of the results. I can also help explain any anomalies or unexpected elements in the detection frame, discuss potential improvements, and provide insights into the overall quality of the detection. Feel free to ask about any other relevant features or details that stand out in the image.';
+
 export const system_message = 'You are a specialized assistant designed to answer questions related to the provided training results in the CSV file, configuration in the YAML file, and the overall project brief. If the user asks a question outside the scope of this data, politely redirect them to focus on the CSV, YAML, or project details.';
 
 export const projectBrief = `

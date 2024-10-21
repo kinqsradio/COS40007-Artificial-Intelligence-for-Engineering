@@ -5,7 +5,8 @@ import FileUpload from './FileUpload';
 import StartProcess from './StartProcess';
 import ImageResults from './ImageResults';
 import TrainingResults from './TrainingResults';
-import GroqChat from './GroqChat';
+import GroqTrainingResultsChat from './GroqTrainingResultsChat';
+import GroqDetectionResultsChat from './GroqDetectionResultsChat';
 import { fetchModels } from '../services/api';
 import { ListModelsResponse } from '../types/models';
 
@@ -78,16 +79,17 @@ const Detection: React.FC = () => {
         }
     };
 
-    const handleExplainImage = (imageData: string, description: string) => {
+    // Separate handleExplainImage functions for training and detection
+    const handleExplainImageForTraining = (imageData: string, description: string) => {
         setExplainImageData(imageData);
         setImageDescription(description);
-        setIsChatStarted(true); // Automatically start chat when explaining an image
+        setIsChatStarted(true); // Automatically start chat when explaining an image for training
     };
 
-    // This function will clear the image data after it has been used
-    const clearImageData = () => {
-        setExplainImageData(null);
-        setImageDescription(null);
+    const handleExplainImageForDetection = (imageData: string, description: string) => {
+        setExplainImageData(imageData);
+        setImageDescription(description);
+        setIsChatStarted(true); // Automatically start chat when explaining an image for training
     };
 
     // Memoize the TrainingResults component to avoid re-renders when toggling chat visibility
@@ -97,7 +99,7 @@ const Detection: React.FC = () => {
                 <TrainingResults
                     trainingFolder={selectedTrainingFolder}
                     onResultsUpdate={handleTrainingResultsUpdate}
-                    onExplainImage={handleExplainImage}
+                    onExplainImage={handleExplainImageForTraining}
                 />
             );
         }
@@ -111,9 +113,6 @@ const Detection: React.FC = () => {
                     <>
                         <ModelSelector onSuccess={handleModelSetSuccess} />
                         <FileUpload onFileUploaded={handleFileUpload} />
-                        <button className="toggle-chat-button" onClick={toggleChat}>
-                            {isChatStarted ? 'Stop Chat' : 'Start Chat'}
-                        </button>
                     </>
                 )}
                 {fileKey && (
@@ -124,10 +123,19 @@ const Detection: React.FC = () => {
                         </button>
                     </>
                 )}
+                {/* Show the chat toggle button only for training-related activities and hide when detection is in progress */}
+                {selectedTrainingFolder !== 'None' && !fileKey && (
+                    <button className="toggle-chat-button" onClick={toggleChat}>
+                        {isChatStarted ? 'Stop Chat' : 'Start Chat'}
+                    </button>
+                )}
             </div>
             <div className="detection-results">
                 {fileKey ? (
-                    <ImageResults fileKey={fileKey} />
+                    <ImageResults
+                        fileKey={fileKey}
+                        onImageData={handleExplainImageForDetection} // Use the detection-specific handler
+                    />
                 ) : (
                     memoizedTrainingResults || (
                         <p>Please select a model or upload a file to start the detection process.</p>
@@ -136,13 +144,23 @@ const Detection: React.FC = () => {
             </div>
             {isChatStarted && (
                 <div className="chat-container">
-                    <GroqChat
-                        csvContent={csvContent}
-                        yamlContent={yamlContent}
-                        imageData={explainImageData}
-                        imageDescription={imageDescription || ''} // Provide a default empty string
-                        clearImageData={clearImageData} // Pass the clear function to GroqChat
-                    />
+                    {/* Use GroqDetectionResultsChat if detection results are available, otherwise GroqTrainingResultsChat */}
+                    {fileKey && explainImageData ? (
+                        <GroqDetectionResultsChat
+                            imageData={explainImageData}
+                            imageDescription={imageDescription || ''} // Provide a default empty string
+                        />
+                    ) : selectedTrainingFolder !== 'None' ? (
+                        <GroqTrainingResultsChat
+                            csvContent={csvContent}
+                            yamlContent={yamlContent}
+                            imageData={explainImageData}
+                            imageDescription={imageDescription || ''} // Provide a default empty string
+                            clearImageData={() => {}} // Clear function is not needed for training results
+                        />
+                    ) : (
+                        <p>Please upload an image file or select training results to start the chat.</p>
+                    )}
                 </div>
             )}
         </div>

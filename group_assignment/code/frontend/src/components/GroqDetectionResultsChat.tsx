@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Groq from 'groq-sdk';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import '../css/OpenAIChat.css';
-import { projectBrief, system_message, default_message } from '../prompt/prompt';
+import { detection_default_message } from '../prompt/prompt';
 
 const groq = new Groq({
     apiKey: process.env.REACT_APP_GROQ_API_KEY || '',
@@ -15,77 +15,32 @@ interface Message {
     content: string | { type: 'text' | 'image_url'; text?: string; image_url?: { url: string } };
 }
 
-interface GroqChatProps {
-    csvContent: string;
-    yamlContent: string;
+interface GroqDetectionResultsChatProps {
     imageData: string | null;
     imageDescription: string;
-    clearImageData: () => void; // Added prop for clearing image data
 }
 
-const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData, imageDescription, clearImageData }) => {
+const GroqDetectionResultsChat: React.FC<GroqDetectionResultsChatProps> = ({ imageData, imageDescription }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const tokenLimit = 1024;
+    const [imageAdded, setImageAdded] = useState<boolean>(false);
     let typingInterval: NodeJS.Timeout;
+
+    console.log("Using GroqDetectionResultsChat");
+
+    useEffect(() => {
+        setMessages([
+            {
+                role: 'assistant',
+                content: detection_default_message
+            }
+        ]);
+    }, []);
 
     const toggleFullScreen = () => {
         setIsFullScreen(!isFullScreen);
-    };
-
-    const sendContentsInChunks = useCallback((csv: string, yaml: string) => {
-        const csvChunks = splitIntoChunks(csv, tokenLimit);
-        const yamlChunks = splitIntoChunks(yaml, tokenLimit);
-        const projectBriefChunks = splitIntoChunks(projectBrief, tokenLimit);
-
-        const initialMessages: Message[] = [
-            {
-                role: 'system',
-                content: system_message
-            }
-        ];
-
-        projectBriefChunks.forEach((chunk, index) => {
-            initialMessages.push({
-                role: 'system',
-                content: `Project Brief chunk ${index + 1}/${projectBriefChunks.length}:\n\n${chunk}`
-            });
-        });
-
-        csvChunks.forEach((chunk, index) => {
-            initialMessages.push({
-                role: 'system',
-                content: `results.csv data chunk ${index + 1}/${csvChunks.length}:\n\n${chunk}`
-            });
-        });
-
-        yamlChunks.forEach((chunk, index) => {
-            initialMessages.push({
-                role: 'system',
-                content: `args.yaml data chunk ${index + 1}/${yamlChunks.length}:\n\n${chunk}`
-            });
-        });
-
-        setMessages(initialMessages);
-    }, [tokenLimit]);
-
-    useEffect(() => {
-        if (csvContent || yamlContent) {
-            sendContentsInChunks(csvContent, yamlContent);
-            setMessages(prevMessages => [
-                ...prevMessages,
-                {
-                    role: 'assistant',
-                    content: default_message
-                }
-            ]);
-        }
-    }, [csvContent, yamlContent, sendContentsInChunks]);
-
-    const splitIntoChunks = (text: string, limit: number) => {
-        return text.match(new RegExp(`.{1,${limit}}`, 'g')) || [];
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -99,10 +54,17 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
         setIsTyping(true);
 
         try {
-            if (imageData) {
-                await handleImageAndTextCompletion();
+            if (imageData && !imageAdded) {
+                await handleImageCompletion(); // Add the image to the chat initially
+                setImageAdded(true); // Prevent re-adding the same image
+            } else if (imageData) {
+                await handleFollowUpAnalysis(newMessages); // For subsequent questions
             } else {
-                await handleTextCompletion(newMessages);
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    { role: 'assistant', content: 'No image data available for analysis.' }
+                ]);
+                setIsTyping(false);
             }
         } catch (error) {
             console.error('Error fetching chat response:', error);
@@ -110,27 +72,12 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
         }
     };
 
-    const handleTextCompletion = async (newMessages: Message[]) => {
-        console.log('Using text models');
-        const filteredMessages = newMessages.filter(msg => !(msg.role === 'user' && typeof msg.content !== 'string'));
-        const completion = await groq.chat.completions.create({
-            messages: filteredMessages.map(msg => ({
-                role: msg.role,
-                content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
-            })),
-            model: 'llama-3.1-70b-versatile',
-            max_tokens: 1024,
-        });
-
-        const assistantContent = completion.choices[0]?.message?.content || 'No response available.';
-        simulateTyping(assistantContent);
-    };
-
-    const handleImageAndTextCompletion = async () => {
+    const handleImageCompletion = async () => {
         console.log('Using vision model to analyze image');
-        const imageContent = `data:image/jpeg;base64,${imageData}`;
 
-        // Add the image to the chat for the user to see
+        const imageContent = `data:image/jpeg;base64,${imageData}`;
+        console.log("Image content:", imageContent);
+
         setMessages(prevMessages => [
             ...prevMessages,
             {
@@ -139,13 +86,14 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
             }
         ]);
 
-        // Enhanced prompt for vision model to provide detailed analysis
+        const customPrompt = `You are analyzing an image as part of a YOLO Model detection results chat. The user may ask about the content, detected objects, or correctness of the detection results. Provide detailed explanations about the objects in the image, their locations, and any other relevant features. Consider whether the detections appear accurate based on what is visible in the image. ${imageDescription}`;
+
         const visionCompletion = await groq.chat.completions.create({
             messages: [
                 {
                     role: 'user',
                     content: [
-                        { type: 'text', text: `Please provide a detailed analysis of the image below. You may want to extracting all the data in the image and providing a detailed analysis and description. ${imageDescription}` },
+                        { type: 'text', text: customPrompt },
                         { type: 'image_url', image_url: { url: imageContent } }
                     ]
                 }
@@ -155,25 +103,33 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
         });
 
         const visionResult = visionCompletion.choices[0]?.message?.content || 'No response available from vision model.';
+        simulateTyping(visionResult);
+    };
 
-        // Forward the vision model output to the text model for further processing
-        console.log('Using text model to process vision model output');
-        const textCompletion = await groq.chat.completions.create({
+    const handleFollowUpAnalysis = async (newMessages: Message[]) => {
+        console.log('Analyzing follow-up questions with vision model');
+
+        const imageContent = `data:image/jpeg;base64,${imageData}`;
+        const lastUserMessage = newMessages[newMessages.length - 1].content;
+
+        const followUpPrompt = `The user has asked a follow-up question regarding the previously analyzed image: "${lastUserMessage}". Continue analyzing the image and provide relevant insights. ${imageDescription}`;
+
+        const followUpCompletion = await groq.chat.completions.create({
             messages: [
                 {
                     role: 'user',
-                    content: visionResult
+                    content: [
+                        { type: 'text', text: followUpPrompt },
+                        { type: 'image_url', image_url: { url: imageContent } }
+                    ]
                 }
             ],
-            model: 'llama-3.1-70b-versatile',
+            model: 'llama-3.2-90b-vision-preview',
             max_tokens: 1024,
         });
 
-        const finalContent = textCompletion.choices[0]?.message?.content || 'No response available.';
-        simulateTyping(finalContent);
-
-        // Clear the image data after processing
-        clearImageData();
+        const followUpResult = followUpCompletion.choices[0]?.message?.content || 'No further insights available.';
+        simulateTyping(followUpResult);
     };
 
     const simulateTyping = (text: string) => {
@@ -248,7 +204,7 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your message related to the training results..."
+                    placeholder="Ask about the detection results..."
                     disabled={isTyping}
                 />
                 <button type="submit" disabled={isTyping}>Send</button>
@@ -258,4 +214,4 @@ const GroqChat: React.FC<GroqChatProps> = ({ csvContent, yamlContent, imageData,
     );
 };
 
-export default GroqChat;
+export default GroqDetectionResultsChat;

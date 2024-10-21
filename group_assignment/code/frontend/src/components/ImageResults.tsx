@@ -4,15 +4,18 @@ import { io, Socket } from 'socket.io-client';
 
 interface ImageResultsProps {
     fileKey: string;
+    onImageData: (imageData: string, description: string) => void;
 }
 
-const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
+const ImageResults: React.FC<ImageResultsProps> = ({ fileKey, onImageData }) => {
     const frameCanvasRef = useRef<HTMLCanvasElement>(null);
     const detectionCanvasRef = useRef<HTMLCanvasElement>(null);
     const socketRef = useRef<Socket | null>(null);
     const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+    const [attachedImage, setAttachedImage] = useState<string | null>(null);
 
     useEffect(() => {
+        // Initialize the socket connection
         socketRef.current = io('http://127.0.0.1:5000', {
             transports: ['websocket'],
         });
@@ -22,6 +25,7 @@ const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
             socketRef.current?.emit('join', { file_key: fileKey });
         });
 
+        // Handle the incoming frame and detection frame data
         socketRef.current.on('frame', (data) => {
             displayFrame(data.data, frameCanvasRef);
         });
@@ -30,11 +34,13 @@ const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
             displayFrame(data.data, detectionCanvasRef);
         });
 
+        // Clean up the socket connection on component unmount
         return () => {
             socketRef.current?.disconnect();
         };
     }, [fileKey]);
 
+    // Function to display a frame on a canvas
     const displayFrame = (base64Data: string, canvasRef: React.RefObject<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (!canvas) {
@@ -53,16 +59,23 @@ const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
         };
     };
 
-    const handleImageClick = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
+    // Function to extract Base64 data from a canvas and send it using the onImageData callback
+    const handleAttachImage = (canvasRef: React.RefObject<HTMLCanvasElement>, description: string) => {
         const canvas = canvasRef.current;
         if (!canvas) {
             return;
         }
+
         // Get the image data URL from the canvas
         const imageDataURL = canvas.toDataURL('image/jpeg');
-        setEnlargedImage(imageDataURL);
+        const base64Data = imageDataURL.split(',')[1]; // Extract the Base64 data without the prefix
+
+        // Attach the new image and update the state
+        setAttachedImage(description);
+        onImageData(base64Data, description);
     };
 
+    // Function to close the modal
     const closeModal = () => {
         setEnlargedImage(null);
     };
@@ -77,7 +90,6 @@ const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
                         ref={frameCanvasRef}
                         width="1270"
                         height="720"
-                        onClick={() => handleImageClick(frameCanvasRef)}
                     ></canvas>
                 </div>
                 <div className="frame-card">
@@ -86,8 +98,13 @@ const ImageResults: React.FC<ImageResultsProps> = ({ fileKey }) => {
                         ref={detectionCanvasRef}
                         width="1270"
                         height="720"
-                        onClick={() => handleImageClick(detectionCanvasRef)}
                     ></canvas>
+                    <button
+                        onClick={() => handleAttachImage(detectionCanvasRef, 'Detection Frame')}
+                        className="attach-button"
+                    >
+                        Ask A.I
+                    </button>
                 </div>
             </div>
 
