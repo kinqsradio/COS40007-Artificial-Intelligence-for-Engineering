@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ListModelsResponse, SetModelsPayload } from '../types/models';
 
 // Set the base URL for the backend
-export const BASE_URL = 'http://127.0.0.1:5000';
+export const BASE_URL = 'https://l755515c-5000.auc1.devtunnels.ms/';
 
 // Fetch the available models from the backend
 export const fetchModels = async (): Promise<ListModelsResponse> => {

@@ -86,7 +86,7 @@ const GroqDetectionResultsChat: React.FC<GroqDetectionResultsChatProps> = ({ ima
             }
         ]);
 
-        const customPrompt = `You are analyzing an image as part of a YOLO Model detection results chat. The user may ask about the content, detected objects, or correctness of the detection results. Provide detailed explanations about the objects in the image, their locations, and any other relevant features. Consider whether the detections appear accurate based on what is visible in the image. ${imageDescription}`;
+        const customPrompt = `You are analyzing an image as part of a model detection results chat.The model is trcitly detecting rubbish and its type, here are the available class label: 'electrical goods', 'rubbish', 'mattress', 'furniture', 'toy', 'bag', 'clothes', 'electrical', 'chair'. The user may ask about the content, detected objects, or correctness of the detection results. Provide detailed explanations about the objects in the image, their locations, and any other relevant features. Consider whether the detections appear accurate based on what is visible in the image. ${imageDescription}`;
 
         const visionCompletion = await groq.chat.completions.create({
             messages: [
