@@ -1,0 +1,6 @@
+train: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/train/
+val: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/val/
+
+nc: 9
+
+names: ['electrical goods', 'rubbish', 'mattress', 'furniture', 'toy', 'bag', 'clothes', 'electrical', 'chair']
