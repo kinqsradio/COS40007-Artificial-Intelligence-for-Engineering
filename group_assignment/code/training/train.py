@@ -11,11 +11,10 @@ def train(model_name):
         imgsz=640,
         batch=32,
         project='group_assignment/runs/train',
-        name=f'{model_name}_150_epochs_original_dataset',
+        name=f'{model_name}_150_epochs_augment_dataset',
         augment=True                   
     )
 
 yolo11n = train('yolo11n')
 yolo11s = train('yolo11s')
 yolo11m = train('yolo11m')
-yolo11l = train('yolo11l')
