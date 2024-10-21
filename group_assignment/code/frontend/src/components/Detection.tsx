@@ -106,6 +106,12 @@ const Detection: React.FC = () => {
         return null;
     }, [selectedTrainingFolder]); // Only re-render if the selectedTrainingFolder changes
 
+    // This function will clear the image data after it has been used
+    const clearImageData = () => {
+        setExplainImageData(null);
+        setImageDescription(null);
+    };
+
     return (
         <div className="detection-container">
             <div className="detection-controls">
@@ -156,8 +162,8 @@ const Detection: React.FC = () => {
                             yamlContent={yamlContent}
                             imageData={explainImageData}
                             imageDescription={imageDescription || ''} // Provide a default empty string
-                            clearImageData={() => {}} // Clear function is not needed for training results
-                        />
+                            clearImageData={clearImageData} // Pass the clear function to GroqChat
+                            />
                     ) : (
                         <p>Please upload an image file or select training results to start the chat.</p>
                     )}
