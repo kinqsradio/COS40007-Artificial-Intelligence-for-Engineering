@@ -1,5 +1,5 @@
-train: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/train/
-val: /Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/val/
+train: /mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/train/
+val: /mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish/Augment_Dataset/images/val/
 
 nc: 9
 
