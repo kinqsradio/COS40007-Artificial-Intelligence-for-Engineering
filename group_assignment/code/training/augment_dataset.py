@@ -231,7 +231,7 @@ class Labelme2YOLO(object):
 # Usage example
 if __name__ == '__main__':
     converter = Labelme2YOLO(
-        json_dir='/Users/anhdang/Documents/Github/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish',
+        json_dir='/mnt/e/Projects/COS40007-Artificial-Intelligence-for-Engineering/group_assignment/datasets/data/data/rubbish',
         to_seg=False,
         num_augmentations=20
     )

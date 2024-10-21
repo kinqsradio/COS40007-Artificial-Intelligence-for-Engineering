@@ -21,7 +21,7 @@ class Labelme2YOLO(object):
         self._label_id_map = self._get_label_id_map(self._json_dir)
         self._to_seg = to_seg
 
-        i = 'Dataset'
+        i = 'TestDataset'
         i += '_seg/' if to_seg else '/'
         self._save_path_pfx = os.path.join(self._json_dir, i)
 
