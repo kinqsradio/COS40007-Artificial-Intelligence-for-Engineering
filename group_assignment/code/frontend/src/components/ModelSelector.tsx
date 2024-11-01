@@ -3,6 +3,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { setModel, fetchModels } from '../services/api';
 import { ListModelsResponse, SetModelsPayload } from '../types/models';
 import { io, Socket } from 'socket.io-client';
+import { BASE_URL } from '../services/api';
+
 
 interface ModelSelectorProps {
     onSuccess: (modelPath: string) => void;
@@ -21,30 +23,31 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onSuccess }) => {
             try {
                 const models: ListModelsResponse = await fetchModels();
                 setDetectionModels(models.detection_models);
-                if (models.detection_models.length > 0) {
+    
+                // Only set the default model if no model is selected
+                if (!configuredModel && models.detection_models.length > 0) {
                     const firstModel = models.detection_models[0];
                     setSelectedModel(firstModel); // Automatically select the first model
-                    if (firstModel !== configuredModel) {
-                        await setModelConfiguration(firstModel); // Configure the first model
-                    }
+                    await setModelConfiguration(firstModel); // Configure the first model
                 }
             } catch (error) {
                 console.error('Failed to fetch models', error);
             }
         }
-
+    
         loadModels();
-
+    
         // Establish WebSocket connection
-        socketRef.current = io('http://127.0.0.1:5000', {
+        socketRef.current = io(BASE_URL, {
             transports: ['websocket'],
         });
-
+    
         return () => {
             // Clean up WebSocket connection on component unmount
             socketRef.current?.disconnect();
         };
     }, [configuredModel]);
+    
 
     // Configure the selected model when it changes and is different from the current configuration
     useEffect(() => {

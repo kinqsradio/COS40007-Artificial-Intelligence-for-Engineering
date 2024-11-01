@@ -23,19 +23,22 @@ const Detection: React.FC = () => {
     useEffect(() => {
         async function loadDefaultModel() {
             try {
-                const models: ListModelsResponse = await fetchModels();
-                if (models.detection_models.length > 0) {
-                    const initialModelPath = models.detection_models[0];
-                    const folder = initialModelPath.split('/')[0];
-                    setSelectedTrainingFolder(folder);
+                if (selectedTrainingFolder === 'None') { // Only load the default model if none is selected
+                    const models: ListModelsResponse = await fetchModels();
+                    if (models.detection_models.length > 0) {
+                        const initialModelPath = models.detection_models[0];
+                        const folder = initialModelPath.split('/')[0];
+                        setSelectedTrainingFolder(folder);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch models', error);
             }
         }
-
+    
         loadDefaultModel();
-    }, []);
+    }, [selectedTrainingFolder]); // Add selectedTrainingFolder as a dependency
+    
 
     const handleModelSetSuccess = (modelPath: string) => {
         const folder = modelPath.split('/')[0];
